@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  fastapi:
+    container_name: "fastapi_backend"
+    build:
+      context: ./
+      dockerfile: app/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - mongo
+
+  postgres:
+    container_name: "postgres"
+    image: postgres:14
+    build:
+      context: ./docker
+      dockerfile: postgres/Dockerfile
+    environment:
+      POSTGRES_DB: product_catalog
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST_AUTH_METHOD: 'trust'
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    container_name: "mongo"
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  postgres_data:
+  mongo_data:
